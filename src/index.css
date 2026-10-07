@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Arc Light palette */
+  --bg: #faf9f7;
+  --bg-gradient: linear-gradient(160deg, #f6f8ff 0%, #faf9f7 45%, #fdf7f2 100%);
+  --surface: rgba(255, 255, 255, 0.68);
+  --surface-strong: rgba(255, 255, 255, 0.88);
+  --surface-muted: #f4f4f7;
+  --ink: #0f2237;
+  --ink-2: #2d3f55;
+  --muted: #647285;
+  --subtle: #8e9db0;
+  --border: rgba(15, 34, 55, 0.10);
+  --border-strong: rgba(15, 34, 55, 0.42);
+  --accent: #0f2237;
+  --accent-hover: #1061a6;
+  --focus: #85b1ed;
+  --success: #177a44;
+  --danger: #b52848;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100dvh;
+  background: var(--bg-gradient);
+  color: var(--ink);
+}
+
+/* Typography helpers */
+.display {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', Menlo, monospace;
+  font-size: 0.92em;
+}
+
+/* Smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Remove input appearance artifacts */
+input[type='date']::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
