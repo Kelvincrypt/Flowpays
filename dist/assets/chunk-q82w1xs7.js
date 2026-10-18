@@ -1,0 +1,20 @@
+import{ba as R}from"./chunk-fac4pr8h.js";import{Ca as H,Ea as N,Fa as O,va as y,xa as C}from"./chunk-gxazmjp3.js";import{Ie as $}from"./chunk-v8yp5de1.js";import{xf as J}from"./chunk-tj10rwq1.js";import"./chunk-7h4dat7a.js";import{ng as _}from"./chunk-x6g0a0qc.js";import{wl as w}from"./chunk-t795qshv.js";import"./chunk-59n0ebnf.js";import"./chunk-sm1pt66h.js";import"./chunk-zbkskpm6.js";import"./chunk-vdszn4dp.js";import"./chunk-cp7qnsst.js";import"./chunk-75vpkpdc.js";import"./chunk-8h44c1p6.js";import"./chunk-vt3prnt7.js";import"./chunk-dzp8vngs.js";import"./chunk-37k4fp0g.js";import{Uo as Y}from"./chunk-7qzdshjv.js";import{Vo as W,Wo as Q}from"./chunk-dxjv5qr6.js";import"./chunk-cmzq8e3k.js";import"./chunk-jahdzk1g.js";import"./chunk-640n8t3d.js";import"./chunk-7xcd2g77.js";import"./chunk-7f3mjpxv.js";import"./chunk-33gf305j.js";import"./chunk-bnfzemeq.js";import"./chunk-h502gd9e.js";import"./chunk-vkwhypcn.js";import{Sr as V}from"./chunk-88dt3s9b.js";import"./chunk-37sgv7h3.js";import{Dt as L,su as M,ut as F}from"./chunk-g0zvh043.js";import"./chunk-6etmxz3n.js";import{Au as n,Cu as q,Du as z}from"./chunk-0y5gb12m.js";import"./chunk-febpbmcg.js";import"./chunk-hd1rrdpg.js";import"./chunk-s5t451sg.js";import"./chunk-4zec644k.js";import"./chunk-0e590d22.js";import"./chunk-1pe80pyv.js";import"./chunk-cyrsscv1.js";import"./chunk-zs038p3b.js";import"./chunk-ehzyk93j.js";import{EH as i}from"./chunk-dgwf5jrz.js";var g=i(n(),1);var Tq={component:()=>{let[E,D]=g.useState(!0),{authenticated:I,user:S}=M(),{walletProxy:P,closePrivyModal:U,createAnalyticsEvent:f,client:b}=F(),{navigate:h,data:l,onUserCloseViaDialogOrKeybindRef:x}=Y(),[T,B]=g.useState(void 0),[p,Z]=g.useState(""),[k,u]=g.useState(!1),{entropyId:A,entropyIdVerifier:a,onCompleteNavigateTo:v,onSuccess:j,onFailure:d}=l.recoverWallet,K=(G="User exited before their wallet could be recovered")=>{U({shouldCallAuthOnSuccess:!1}),d(typeof G=="string"?new V(G):G)};return x.current=K,g.useEffect(()=>{if(!I)return K("User must be authenticated and have a Privy wallet before it can be recovered")},[I]),z(J,{children:[q(J.Header,{icon:R,title:"Enter your password",subtitle:"Please provision your account on this new device. To continue, enter your recovery password.",showClose:!0,onClose:K}),q(J.Body,{children:q(o,{children:z("div",{children:[z(C,{children:[q(y,{type:E?"password":"text",onChange:(G)=>((X)=>{X&&B(X)})(G.target.value),disabled:k,style:{paddingRight:"2.3rem"}}),q(H,{style:{right:"0.75rem"},children:E?q(N,{onClick:()=>D(!1)}):q(O,{onClick:()=>D(!0)})})]}),!!p&&q(m,{children:p})]})})}),z(J.Footer,{children:[q(J.HelpText,{children:z($,{children:[q("h4",{children:"Why is this necessary?"}),q("p",{children:"You previously set a password for this wallet. This helps ensure only you can access it"})]})}),q(J.Actions,{children:q(s,{loading:k||!P,disabled:!T,onClick:async()=>{u(!0);let G=await b.getAccessToken(),X=L(S,A);if(!G||!X||T===null)return K("User must be authenticated and have a Privy wallet before it can be recovered");try{f({eventName:"embedded_wallet_recovery_started",payload:{walletAddress:X.address}}),await P?.recover({accessToken:G,entropyId:A,entropyIdVerifier:a,recoveryPassword:T}),Z(""),v?h(v):U({shouldCallAuthOnSuccess:!1}),j?.(X),f({eventName:"embedded_wallet_recovery_completed",payload:{walletAddress:X.address}})}catch(c){w(c)?Z("Invalid recovery password, please try again."):Z("An error has occurred, please try again.")}finally{u(!1)}},$hideAnimations:!A&&k,children:"Recover your account"})}),q(J.Watermark,{})]})]})}},o=Q.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`,m=Q.div`
+  line-height: 20px;
+  height: 20px;
+  font-size: 13px;
+  color: var(--privy-color-error);
+  text-align: left;
+  margin-top: 0.5rem;
+`,s=Q(_)`
+  ${({$hideAnimations:E})=>E&&W`
+      && {
+        /* Remove animations because the recoverWallet task on the iframe partially
+           blocks the renderer, so the animation stutters and doesn't look good */
+        transition: none;
+      }
+    `}
+`;export{Tq as default,Tq as PasswordRecoveryScreen};

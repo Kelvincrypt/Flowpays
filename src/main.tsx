@@ -27,7 +27,7 @@ const queryClient = new QueryClient()
 
 // Privy App ID — replace with your own from https://dashboard.privy.io
 // Set VITE_PRIVY_APP_ID in .env or paste your id here for development
-const PRIVY_APP_ID = (import.meta.env.VITE_PRIVY_APP_ID as string | undefined) ?? 'cmsyhvm8p003l0dihld7j3eh8'
+const PRIVY_APP_ID = (import.meta.env.VITE_PRIVY_APP_ID as string | undefined) ?? 'cmuyft2e4004x0clc2yh4kwtq'
 
 // Studio logo SVG
 const StudioLogo = () => (

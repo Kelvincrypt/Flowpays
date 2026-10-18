@@ -34,6 +34,25 @@ export default defineConfig({
       'vite-plugin-node-polyfills/shims/process',
     ],
   },
+  build: {
+    chunkSizeWarningLimit: 3000,
+    // Use esbuild minifier — much lower peak memory than Rollup's terser
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        // Coarse split: one chunk per logical group keeps Rollup's graph small
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('@privy-io')) return 'privy'
+          if (id.includes('@walletconnect')) return 'wc'
+          if (id.includes('wagmi') || id.includes('@wagmi')) return 'wagmi'
+          if (id.includes('viem') || id.includes('/ox/') || id.includes('porto')) return 'viem'
+          if (id.includes('@tanstack')) return 'query'
+          return 'vendor'
+        },
+      },
+    },
+  },
   server: {
     allowedHosts: true,
     cors: true,

@@ -1,0 +1,2 @@
+import{or as q}from"./chunk-vkwhypcn.js";import{_x as h,ly as k}from"./chunk-1pe80pyv.js";var O=async({chain:d,address:w,appId:x,rpcConfig:D,erc20Address:G})=>{return{balance:await h({chain:d,transport:k(q(d,D,x))}).readContract({address:G,abi:H,functionName:"balanceOf",args:[w]}).catch(()=>0n),chain:d}},H=[{constant:!0,inputs:[{name:"_owner",type:"address"}],name:"balanceOf",outputs:[{name:"balance",type:"uint256"}],payable:!1,stateMutability:"view",type:"function"}];
+export{O as Dc};

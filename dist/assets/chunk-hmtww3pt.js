@@ -1,0 +1,2 @@
+import{xc as q}from"./chunk-km6n52s4.js";function v(u,f=6,b=!1,k=!1){let c=(parseFloat(u.toString())/1e9).toFixed(f).replace(/0+$/,"").replace(/\.$/,""),h=k?"":" SOL";return b?`${c}${h}`:`${c==="0"?"<0.001":c}${h}`}function x({amount:u,fee:f,tokenPrice:b,isUsdc:k}){let c=BigInt(Math.floor(parseFloat(u)*10**(k?6:9))),h=k?c:c+f;return{fundingAmountInBaseUnit:c,fundingAmountInUsd:b?q(c,b):void 0,totalPriceInUsd:b?q(h,b):void 0,totalPriceInNativeCurrency:v(h),feePriceInNativeCurrency:v(f),feePriceInUsd:b?q(f,b):void 0}}
+export{v as nc,x as oc};

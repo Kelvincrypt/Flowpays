@@ -1,0 +1,2 @@
+import{Au as C}from"./chunk-0y5gb12m.js";import{EH as z}from"./chunk-dgwf5jrz.js";var d=z(C(),1),D=(f)=>{let[k,w]=d.useState();return d.useEffect(()=>{f().then((x)=>{w(x)}).catch(()=>{})},[]),k},h=async(f)=>typeof window<"u"&&("PaymentRequest"in window)&&await new window.PaymentRequest([{supportedMethods:f}],{id:"0",total:{label:"Item",amount:{currency:"USD",value:"1.00"}}}).canMakePayment(),F=()=>h("https://apple.com/apple-pay"),G=()=>h("https://google.com/pay");
+export{D as Ab,F as Bb,G as Cb};

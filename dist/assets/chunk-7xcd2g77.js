@@ -1,0 +1,2 @@
+import{mr as E}from"./chunk-h502gd9e.js";import{Au as G,Bu as w,Cu as B}from"./chunk-0y5gb12m.js";import{EH as F}from"./chunk-dgwf5jrz.js";var k=F(G(),1);var q=E(()=>({})),K=({children:b,configPlugins:f})=>(k.useEffect(()=>{if(f&&f.length!==0)return q.setState(Object.fromEntries(f.map((h)=>[h.id,h]))),()=>{q.setState(Object.fromEntries(f.map((h)=>[h.id,void 0])))}},[f]),B(w,{children:b}));var H=(b)=>q.getState()[b],N=()=>k.useCallback((b)=>H(b),[]);
+export{K as Xq,H as Yq,N as Zq};

@@ -1,0 +1,2 @@
+import{ut as v}from"./chunk-g0zvh043.js";import{Au as K}from"./chunk-0y5gb12m.js";import{EH as F}from"./chunk-dgwf5jrz.js";var b=F(K(),1);var Q=({enabled:y=!0}={})=>{let{showFiatPrices:z,getUsdPriceForSol:A}=v(),[B,k]=b.useState(!0),[C,q]=b.useState(void 0),[D,E]=b.useState(void 0);return b.useEffect(()=>{(async()=>{if(z&&y)try{k(!0);let h=await A();h?E(h):q(Error("Unable to fetch SOL price"))}catch(h){q(h)}finally{k(!1)}else k(!1)})()},[]),{solPrice:D,isSolPriceLoading:B,solPriceError:C}};
+export{Q as Oc};

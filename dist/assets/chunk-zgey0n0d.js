@@ -1,0 +1,2 @@
+import{Au as c}from"./chunk-0y5gb12m.js";import{EH as n}from"./chunk-dgwf5jrz.js";var e=n(c(),1);function i({title:t,titleId:r,...a},o){return e.createElement("svg",Object.assign({xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor","aria-hidden":"true","data-slot":"icon",ref:o,"aria-labelledby":r},a),t?e.createElement("title",{id:r},t):null,e.createElement("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"}))}var l=e.forwardRef(i),d=l;
+export{d as ke};

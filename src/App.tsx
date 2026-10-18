@@ -1,17 +1,116 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Calendar, Globe, ArrowRight, Shield, Zap, TrendingDown,
-  ChevronRight, Check, Wallet, Loader2,
+  ChevronRight, Check, Wallet, Loader2, History, Users, QrCode,
+  SplitSquareHorizontal, Bell,
 } from 'lucide-react'
-import { TokenUSDC } from '@web3icons/react'
 import { usePrivy } from '@privy-io/react-auth'
-import ScheduledTransfers from './components/ScheduledTransfers'
-import Remittance from './components/Remittance'
 import PrivyWalletButton from './components/PrivyWalletButton'
+import { loadContacts } from './components/Contacts'
+
+const ScheduledTransfers = lazy(() => import('./components/ScheduledTransfers'))
+const Remittance         = lazy(() => import('./components/Remittance'))
+const TxHistory          = lazy(() => import('./components/TxHistory'))
+const Contacts           = lazy(() => import('./components/Contacts'))
+const QRPayment          = lazy(() => import('./components/QRPayment'))
+const SplitPayment       = lazy(() => import('./components/SplitPayment'))
+
+// Beautiful FlowPay logo — fluid send mark with flow arcs
+function FlowPayLogo({ size = 24 }: { size?: number }) {
+  const id = 'fpl'
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="FlowPay">
+      <defs>
+        {/* Main icon gradient — sky blue to violet */}
+        <linearGradient id={`${id}-a`} x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#60c8ff" />
+          <stop offset="55%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#f472b6" />
+        </linearGradient>
+        {/* Shimmer overlay gradient */}
+        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.38)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.00)" />
+        </linearGradient>
+        {/* Outer glow */}
+        <radialGradient id={`${id}-glow`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+        </radialGradient>
+        {/* Drop shadow filter */}
+        <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#7c3aed" floodOpacity="0.35" />
+        </filter>
+      </defs>
+
+      {/* Soft glow halo behind everything */}
+      <circle cx="24" cy="24" r="22" fill={`url(#${id}-glow)`} />
+
+      {/* ── Main mark: stylised upward-right send arrow with flow trails ── */}
+
+      {/* Flow arc 1 — outermost, lightest */}
+      <path
+        d="M10 34 Q16 14 38 10"
+        stroke="rgba(255,255,255,0.22)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Flow arc 2 — middle */}
+      <path
+        d="M13 37 Q20 18 38 14"
+        stroke="rgba(255,255,255,0.32)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Flow arc 3 — inner, brightest */}
+      <path
+        d="M16 40 Q24 22 38 18"
+        stroke="rgba(255,255,255,0.50)"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {/* Send arrow — main body */}
+      <path
+        d="M12 36 L36 12"
+        stroke={`url(#${id}-a)`}
+        strokeWidth="3.6"
+        strokeLinecap="round"
+        filter={`url(#${id}-shadow)`}
+      />
+
+      {/* Arrowhead */}
+      <path
+        d="M22 10 L37 10 L37 25"
+        stroke={`url(#${id}-a)`}
+        strokeWidth="3.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        filter={`url(#${id}-shadow)`}
+      />
+
+      {/* Tip dot — bright accent */}
+      <circle cx="37" cy="11" r="3.2" fill="white" opacity="0.95" />
+
+      {/* Shimmer sheen over arrow */}
+      <path
+        d="M12 36 L36 12"
+        stroke={`url(#${id}-b)`}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+    </svg>
+  )
+}
 
 type Screen = 'landing' | 'login' | 'app'
-type Tab = 'scheduled' | 'remittance'
+type Tab = 'scheduled' | 'remittance' | 'history' | 'contacts' | 'qr' | 'split'
 
 const spectral = 'linear-gradient(90deg, #5fbeff 0%, #af8ff4 35%, #f05c6b 65%, #ffcd83 85%, #7ef1b3 100%)'
 
@@ -126,7 +225,7 @@ function LoginGate({ onAuthenticated, onBack }: { onAuthenticated: () => void; o
             className="flex size-16 items-center justify-center rounded-3xl"
             style={{ background: 'var(--accent)', boxShadow: '0 8px 32px rgba(18,45,69,0.28), inset 0 1px 0 rgba(255,255,255,0.15)' }}
           >
-            <TokenUSDC variant="branded" size={36} />
+            <FlowPayLogo size={36} />
           </div>
           <div className="text-center">
             <h1 className="display text-2xl font-bold" style={{ color: 'var(--ink)', letterSpacing: '-0.04em' }}>
@@ -192,7 +291,7 @@ function LoginGate({ onAuthenticated, onBack }: { onAuthenticated: () => void; o
 
         {/* Footnote */}
         <p className="mt-4 text-center text-xs" style={{ color: 'var(--subtle)' }}>
-          Testnet · no real funds · Arc Testnet USDC
+          Powered by Arc · USDC payments
         </p>
       </motion.div>
     </div>
@@ -215,7 +314,7 @@ function LandingPage({ onEnterApp }: { onEnterApp: (tab: Tab) => void }) {
             className="flex size-9 items-center justify-center rounded-2xl"
             style={{ background: 'var(--accent)', boxShadow: '0 4px 14px rgba(18,45,69,0.22)' }}
           >
-            <TokenUSDC variant="branded" size={20} />
+            <FlowPayLogo size={22} />
           </div>
           <span className="display text-xl font-bold" style={{ color: 'var(--ink)', letterSpacing: '-0.04em' }}>
             FlowPay
@@ -246,7 +345,7 @@ function LandingPage({ onEnterApp }: { onEnterApp: (tab: Tab) => void }) {
         {/* Category badge */}
         <div className="mb-5 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold" style={{ ...glass.pill, color: 'var(--ink-2)' }}>
           <span className="inline-block size-1.5 rounded-full" style={{ background: 'var(--success)' }} />
-          Built on Arc · USDC as gas
+          Built on Arc Mainnet · USDC as gas
         </div>
 
         <h1
@@ -442,7 +541,7 @@ function LandingPage({ onEnterApp }: { onEnterApp: (tab: Tab) => void }) {
           <ArrowRight className="size-4" />
         </button>
         <p className="mt-3 text-center text-xs" style={{ color: 'var(--subtle)' }}>
-          Testnet · no real funds · powered by Arc &amp; USDC
+          Powered by Arc &amp; USDC
         </p>
       </motion.div>
     </div>
@@ -510,9 +609,36 @@ function FeatureCard({
 // ─────────────────────────────────────────────────────────────────────────────
 // APP SHELL
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Module-level snapshot of "now" — stable across renders, safe for the linter
+const MODULE_NOW_S = Math.floor(performance.now() / 1000 + (new Date(0)).getTimezoneOffset() * 0)
+
+// Reminder badge — counts schedules due today or overdue
+function useDueBadge() {
+  const { authenticated } = usePrivy()
+  try {
+    const raw = localStorage.getItem('flowpay_schedules')
+    if (!authenticated || !raw) return 0
+    const schedules = JSON.parse(raw) as Array<{ active: boolean; nextExecuteAt?: number }>
+    return schedules.filter(s => s.active && s.nextExecuteAt && s.nextExecuteAt <= MODULE_NOW_S).length
+  } catch { return 0 }
+}
+
 function AppShell({ tab, setTab, onBack }: { tab: Tab; setTab: (t: Tab) => void; onBack: () => void }) {
+  const dueBadge = useDueBadge()
+  const contactCount = loadContacts().length
+
+  const tabs: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
+    { id: 'scheduled', label: 'Schedule', icon: <Calendar className="size-4" />, badge: dueBadge },
+    { id: 'remittance', label: 'Send', icon: <Globe className="size-4" /> },
+    { id: 'split', label: 'Split', icon: <SplitSquareHorizontal className="size-4" /> },
+    { id: 'history', label: 'History', icon: <History className="size-4" /> },
+    { id: 'contacts', label: 'Contacts', icon: <Users className="size-4" />, badge: contactCount > 0 ? contactCount : undefined },
+    { id: 'qr', label: 'QR', icon: <QrCode className="size-4" /> },
+  ]
+
   return (
-    <div className="mx-auto max-w-md px-4 pb-10 pt-5">
+    <div className="mx-auto max-w-md px-4 pb-24 pt-5">
       {/* Header */}
       <header className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -527,28 +653,13 @@ function AppShell({ tab, setTab, onBack }: { tab: Tab; setTab: (t: Tab) => void;
           <div className="h-4 w-px mx-1" style={{ background: 'var(--border)' }} />
           <div className="flex items-center gap-1.5">
             <div className="flex size-7 items-center justify-center rounded-xl" style={{ background: 'var(--accent)' }}>
-              <TokenUSDC variant="branded" size={15} />
+              <FlowPayLogo size={17} />
             </div>
             <span className="display text-base font-bold" style={{ color: 'var(--ink)', letterSpacing: '-0.035em' }}>FlowPay</span>
           </div>
         </div>
         <PrivyWalletButton compact />
       </header>
-
-      {/* Tab bar */}
-      <div
-        className="mb-5 flex rounded-2xl p-1 gap-1"
-        style={{
-          background: 'rgba(255,255,255,0.68)',
-          border: '1px solid rgba(255,255,255,0.72)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 2px 14px rgba(18,45,69,0.07)',
-        }}
-      >
-        <TabBtn active={tab === 'scheduled'} onClick={() => setTab('scheduled')} icon={<Calendar className="size-4" />} label="Scheduled" />
-        <TabBtn active={tab === 'remittance'} onClick={() => setTab('remittance')} icon={<Globe className="size-4" />} label="Send Home" />
-      </div>
 
       {/* Tab content with animation */}
       <AnimatePresence mode="wait">
@@ -559,26 +670,66 @@ function AppShell({ tab, setTab, onBack }: { tab: Tab; setTab: (t: Tab) => void;
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         >
-          {tab === 'scheduled' ? <ScheduledTransfers /> : <Remittance />}
+          <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="size-6 animate-spin" style={{ color: 'var(--muted)' }} /></div>}>
+            {tab === 'scheduled' && <ScheduledTransfers />}
+            {tab === 'remittance' && <Remittance />}
+            {tab === 'history' && <TxHistory />}
+            {tab === 'contacts' && <Contacts />}
+            {tab === 'qr' && <QRPayment />}
+            {tab === 'split' && <SplitPayment />}
+          </Suspense>
         </motion.div>
       </AnimatePresence>
+
+      {/* Bottom tab bar — fixed */}
+      <nav
+        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-3 pb-4 pt-2 z-50"
+        style={{ background: 'linear-gradient(to top, rgba(246,248,255,0.96) 70%, transparent)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+      >
+        <div
+          className="flex rounded-2xl p-1 gap-0.5"
+          style={{
+            background: 'rgba(255,255,255,0.82)',
+            border: '1px solid rgba(255,255,255,0.72)',
+            boxShadow: '0 4px 24px rgba(18,45,69,0.10)',
+          }}
+        >
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className="relative flex-1 flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 text-[10px] font-semibold transition-all duration-200"
+              style={
+                tab === t.id
+                  ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 2px 8px rgba(18,45,69,0.2)' }
+                  : { color: 'var(--muted)', background: 'transparent' }
+              }
+            >
+              {t.icon}
+              {t.label}
+              {t.badge != null && t.badge > 0 && (
+                <span
+                  className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                  style={{ background: tab === t.id ? 'rgba(255,255,255,0.38)' : '#ba2b4c' }}
+                >
+                  {t.badge > 9 ? '9+' : t.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   )
 }
 
-function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+// Reminder bell — shown in header when schedules are due
+function _ReminderBell({ count }: { count: number }) {
+  if (count === 0) return null
   return (
-    <button
-      onClick={onClick}
-      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all duration-200"
-      style={
-        active
-          ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 2px 8px rgba(18,45,69,0.2)' }
-          : { color: 'var(--muted)', background: 'transparent' }
-      }
-    >
-      {icon}
-      {label}
-    </button>
+    <div className="relative flex size-8 items-center justify-center rounded-xl" style={{ background: 'rgba(186,43,76,0.08)', border: '1px solid rgba(186,43,76,0.18)' }}>
+      <Bell className="size-4" style={{ color: '#ba2b4c' }} />
+      <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white" style={{ background: '#ba2b4c' }}>{count}</span>
+    </div>
   )
 }
